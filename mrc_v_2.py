@@ -5,8 +5,10 @@ from scipy.stats import norm, rayleigh, expon,gaussian_kde
 from scipy import special as sp
 from numpy import asarray
 
+
 db_16_ber = 1.73115703 * 10**(-5)
 db_14_ber = 6.38754163 * 10**(-5)
+
 
 # Simulation parameters
 # this is a 1X3 MRC system
@@ -25,7 +27,7 @@ stream_0_1 = np.random.randint(low=0, high=M, size=num_trials)
 ones_and_minus_ones = constellation[stream_0_1]
 ###################
 mean_x = 0
-var_x = 1
+var_x = 1.1
 mean_x_star = 2
 var_x_star = 1
 noise1 = norm.rvs(loc=mean_x, scale=var_x, size=num_trials)
@@ -70,9 +72,9 @@ w3 = H3 / np.sqrt(abs(H1)**2 + abs(H2)**2 + abs(H3)**2)
 P = sum(abs(ones_and_minus_ones)**2) / (num_trials)
 snr = 10**(snr_db / 10)
 N0 = P / snr
-recv_1 = (H1 * ones_and_minus_ones) + (noise1+1j*noise2) * np.sqrt(N0 / 2)
-recv_2 = (H2 * ones_and_minus_ones) + (noise3+1j*noise4) * np.sqrt(N0 / 2)
-recv_3 = (H3 * ones_and_minus_ones) + (noise5+1j*noise6) * np.sqrt(N0 / 2)
+recv_1 = (np.sqrt(1/2)*H1 * ones_and_minus_ones) + (noise1+1j*noise2) * np.sqrt(N0 / 2)
+recv_2 = (np.sqrt(1/2)*H2 * ones_and_minus_ones) + (noise1+1j*noise2) * np.sqrt(N0 / 2)
+recv_3 = (np.sqrt(1/2)*H3 * ones_and_minus_ones) + (noise1+1j*noise2) * np.sqrt(N0 / 2)
 # recv_1 = (h1 * ones_and_minus_ones) + noise1 * np.sqrt(N0 / 2)
 # recv_2 = (h2 * ones_and_minus_ones) + noise2 * np.sqrt(N0 / 2)
 # recv_3 = (h3 * ones_and_minus_ones) + noise3 * np.sqrt(N0 / 2)
@@ -89,6 +91,8 @@ for i in comb_at_recv:
         dec_data.append(1)
 
 
+
+
 # err_s_1=[]
 # err_s_0=[]
 # for i in range(len(comb_at_recv)):
@@ -99,14 +103,18 @@ for i in comb_at_recv:
 # print(comb_at_recv[0])
 # x_values1 = np.linspace(min(np.real(comb_at_recv)), max(np.real(comb_at_recv)), num_trials)
 
+
 # # Estimate the kernel density function
 # kde1 = gaussian_kde(np.real(comb_at_recv))
+
 
 # # Evaluate the KDE at the x values
 # estimated_pdf = kde1.evaluate(x_values1)
 # normalized_pdf = estimated_pdf / estimated_pdf.sum()
 
+
 # x_values2 = np.linspace(min(err_s_0), max(err_s_0), num_trials)
+
 
 # # Estimate the kernel density function
 # kde2 = gaussian_kde(err_s_0)
@@ -116,16 +124,22 @@ for i in comb_at_recv:
 # normalized_pdf2 = estimated_pdf2 / estimated_pdf2.sum()
 
 
+
+
 #print(np.var(x_values2))
+
 
 # x_star = norm.rvs(loc=np.mean(x_values2), scale=np.var(x_values1), size=num_trials)
 # x_star_2 = norm.rvs(loc=np.mean(x_values1), scale=np.var(x_values1), size=num_trials)
 # print(kde2.pdf(x_star)[:100])
 
+
 # hist_values, bin_edges = np.histogram(comb_at_recv, bins=100000, density=True)
+
 
 # Calculate bin widths
 # bin_widths = bin_edges[1:] - bin_edges[:-1]
+
 
 # # Convert histogram to PDF by normalizing by bin width and total number of data points
 # pdf = hist_values / (hist_values.sum() * bin_widths)
@@ -136,34 +150,45 @@ count = 0
 #count_bpsk = 0
 # for j in range(100):
 #     count = 0
-# for i in range(0, len(stream_0_1)):
-#     if dec_data[i] != stream_0_1[i] and (abs(H1[i])**2+ abs(H2[i])**2+ abs(H3[i])**2 <1/np.sqrt(snr)):#and (abs(x_star[i]) < 1/np.sqrt(snr) and abs(x_star2[i]) < 1/np.sqrt(snr) and abs(x_star2[i]) < 1/np.sqrt(snr)):
-#         count = count + 1
-# ber_est.append(count / num_trials)
-
-# print(ber_est)
+for i in range(0, len(stream_0_1)):
+    if dec_data[i] != stream_0_1[i] and (abs(H1[i])**2+ abs(H2[i])**2+ abs(H3[i])**2 <1/np.sqrt(snr)):#and (abs(x_star[i]) < 1/np.sqrt(snr) and abs(x_star2[i]) < 1/np.sqrt(snr) and abs(x_star2[i]) < 1/np.sqrt(snr)):
+        count = count + 1
+ber_est.append(count / num_trials)
 
 
+print(ber_est)
 
 
 
-#plt.plot(ones_and_minus_ones,np.real(comb_at_recv),np.imag(comb_at_recv),'o')
-# x = [np.real(ele) for ele in comb_at_recv]
+
+
+
+
+
+
+
+# plt.plot(ones_and_minus_ones,comb_at_recv,'o')
+# x = [ele.real for ele in comb_at_recv]
 # # extract imaginary part
-# y = [np.imag(ele) for ele in comb_at_recv]
-  
+# y = [ele.imag for ele in comb_at_recv]
+ 
 # # plot the complex numbers
-plt.scatter(ones_and_minus_ones, np.imag(comb_at_recv))
-#plt.hist(np.real(comb_at_recv),bins=100)
-#plt.hist(np.imag(comb_at_recv),bins=100)
-#plt.plot(x_values2, estimated_pdf2, color='blue', label='Estimated PDF (KDE) err 2')
-#plt.plot(x_values1,estimated_pdf,color="yellow",label='samp')
-# #plt.legend()
-plt.grid(True)
-plt.show()
+# plt.scatter(x, y)
+# #plt.hist(np.real(comb_at_recv),bins=100)
+# #plt.hist(np.imag(comb_at_recv),bins=100)
+# #plt.plot(x_values2, estimated_pdf2, color='blue', label='Estimated PDF (KDE) err 2')
+# #plt.plot(x_values1,estimated_pdf,color="yellow",label='samp')
+# # #plt.legend()
+# plt.grid(True)
+# plt.show()
+
+
 
 
 # plt.plot(x_star, kde2.pdf(x_star), color='blue', label='Estimated PDF (KDE) err 2')
 # plt.legend()
 # plt.grid(True)
 # plt.show()
+
+
+

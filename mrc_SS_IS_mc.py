@@ -106,6 +106,17 @@ weight2=(norm.pdf(new_x2,loc=np.mean(h2),scale=np.var(h2)))/(norm.pdf(new_x2,loc
 weight3=(norm.pdf(new_x3,loc=np.mean(h3),scale=np.var(h3)))/(norm.pdf(new_x3,loc=np.mean(new_x3),scale=np.var(new_x3)))  #weight of 3rd dim
 
 
+m1=np.mean(new_x1)
+m2=np.mean(new_x2)
+m3=np.mean(new_x3)
+
+v1=np.var(new_x1)
+v2=np.var(new_x2)
+v3=np.var(new_x3)
+###############################################Sampling fn
+x_star = norm.rvs(loc=m1, scale=v1, size=num_trials)
+x_star2 = norm.rvs(loc=m2, scale=v2, size=num_trials)
+x_star3 = norm.rvs(loc=m3, scale=v3, size=num_trials)
 ##############Importance Sampling
 ber_est = []
 count = 0
@@ -113,21 +124,29 @@ count_mc=0
 c_ss_is=[]
 x_ss_is=[]
 c_mc=[]
+# for i in range(1, len(stream_0_1)):
+#     if abs(new_x1[i])**2+abs(new_x2[i])**2+abs(new_x3[i])**2<th:
+#         count = count + weight1[i]*weight2[i]*weight3[i]
+#     c_ss_is.append(count / i)
+#     x_ss_is.append(i)
+# ber_est.append(count / num_trials)
+
+# print(abs(ber_est[0]),"SS-IS")
+
+
+# for i in range(1, len(stream_0_1)):
+#     if dec_data[i]!=stream_0_1[i] and abs(h1[i])**2+abs(h2[i])**2+abs(h3[i])**2<th :
+#         count_mc = count_mc + 1
+#     c_mc.append(count_mc / (12.5*i))
+# print(count_mc/(12.5*num_trials),"van MC")
+
 for i in range(1, len(stream_0_1)):
-    if abs(new_x1[i])**2+abs(new_x2[i])**2+abs(new_x3[i])**2<th:
-        count = count + weight1[i]*weight2[i]*weight3[i]
-    c_ss_is.append(count / i)
-    x_ss_is.append(i)
-ber_est.append(count / num_trials)
-
-print(abs(ber_est[0]),"SS-IS")
-
-
-for i in range(1, len(stream_0_1)):
-    if dec_data[i]!=stream_0_1[i] and abs(h1[i])**2+abs(h2[i])**2+abs(h3[i])**2<th :
-        count_mc = count_mc + 1
-    c_mc.append(count_mc / (12.5*i))
-print(count_mc/(12.5*num_trials),"van MC")
+    if dec_data[i]!=stream_0_1[i] and abs(x_star[i])**2+abs(x_star2[i])**2+abs(x_star3[i])**2<=th:
+        count_mc = count_mc + ((norm.pdf(x_star[i], loc=np.mean(h1), scale=np.var(h1))/norm.pdf(x_star[i], loc=m1, scale=v1))*
+                               (norm.pdf(x_star2[i], loc=np.mean(h2), scale=np.var(h2))/norm.pdf(x_star2[i], loc=m2, scale=v2))*
+                               (norm.pdf(x_star3[i], loc=np.mean(h3), scale=np.var(h3))/norm.pdf(x_star3[i], loc=m3, scale=v3)))
+    c_mc.append(count_mc / (i))
+print(count_mc/(num_trials),"van IS")
 
 # count_mc_2=0
 # for i in range(0, len(stream_0_1)):
@@ -145,17 +164,17 @@ print(count_mc/(12.5*num_trials),"van MC")
 # plt.grid(True)
 # plt.show()
 
-true = []
-st = []
-for j in range(num_trials):
-    true.append(db_16_ber)
-    st.append(j)
+# true = []
+# st = []
+# for j in range(num_trials):
+#     true.append(db_16_ber)
+#     st.append(j)
 
-plt.figure()
-plt.grid()
-plt.plot(x_ss_is, c_ss_is, label="SS IS")
-plt.plot(x_ss_is, c_mc, label="MC app")
-plt.plot(st, true, label='True value',linestyle='dashed',color="gold",alpha=0.7)
-plt.xlabel('Number of iterations')
-plt.legend()
-plt.show()
+# plt.figure()
+# plt.grid()
+# plt.plot(x_ss_is, c_ss_is, label="SS IS")
+# plt.plot(x_ss_is, c_mc, label="MC app")
+# plt.plot(st, true, label='True value',linestyle='dashed',color="gold",alpha=0.7)
+# plt.xlabel('Number of iterations')
+# plt.legend()
+# plt.show()
