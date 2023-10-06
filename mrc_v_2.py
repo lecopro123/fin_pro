@@ -6,13 +6,13 @@ from scipy import special as sp
 from numpy import asarray
 
 
-db_16_ber = 1.73115703 * 10**(-5)
+db_16_ber = 1.747 * 10**(-5)
 db_14_ber = 6.38754163 * 10**(-5)
 
 
 # Simulation parameters
 # this is a 1X3 MRC system
-num_trials = 10000000  # Number of trials (bits transmitted per trial)
+num_trials = 30000000  # Number of trials (bits transmitted per trial)
 #sims=1000 # Number of simulations
 # snr_range_db = np.arange(-10, 18, 2)  # SNR range in dB
 # print(snr_range_db)
@@ -27,15 +27,16 @@ stream_0_1 = np.random.randint(low=0, high=M, size=num_trials)
 ones_and_minus_ones = constellation[stream_0_1]
 ###################
 mean_x = 0
-var_x = 1.1
+var_x = 1.4
+var_xn=1.7
 mean_x_star = 2
 var_x_star = 1
-noise1 = norm.rvs(loc=mean_x, scale=var_x, size=num_trials)
-noise2 = norm.rvs(loc=mean_x, scale=var_x, size=num_trials)
-noise3 = norm.rvs(loc=mean_x, scale=var_x, size=num_trials)
-noise4 = norm.rvs(loc=mean_x, scale=var_x, size=num_trials)
-noise5 = norm.rvs(loc=mean_x, scale=var_x, size=num_trials)
-noise6 = norm.rvs(loc=mean_x, scale=var_x, size=num_trials)
+noise1 = norm.rvs(loc=mean_x, scale=var_xn, size=num_trials)
+noise2 = norm.rvs(loc=mean_x, scale=var_xn, size=num_trials)
+noise3 = norm.rvs(loc=mean_x, scale=var_xn, size=num_trials)
+noise4 = norm.rvs(loc=mean_x, scale=var_xn, size=num_trials)
+noise5 = norm.rvs(loc=mean_x, scale=var_xn, size=num_trials)
+noise6 = norm.rvs(loc=mean_x, scale=var_xn, size=num_trials)
 h1 = norm.rvs(loc=mean_x, scale=var_x,
               size=num_trials)  ####channel coefficients
 h2 = norm.rvs(loc=mean_x, scale=var_x,
@@ -49,15 +50,15 @@ h5 = norm.rvs(loc=mean_x, scale=var_x,
 h6 = norm.rvs(loc=mean_x, scale=var_x,
               size=num_trials)  #### channel coefficients
 #print(ones_and_minus_ones)
-x_star = norm.rvs(loc=mean_x_star, scale=var_x_star, size=num_trials)
-x_star2 = norm.rvs(loc=mean_x_star, scale=var_x_star, size=num_trials)
-x_star3 = norm.rvs(loc=mean_x_star, scale=var_x_star, size=num_trials)
-x_star4 = norm.rvs(loc=mean_x_star, scale=var_x_star, size=num_trials)
-x_star5 = norm.rvs(loc=mean_x_star, scale=var_x_star, size=num_trials)
-x_star6 = norm.rvs(loc=mean_x_star, scale=var_x_star, size=num_trials)
-samp_1=x_star+1j*x_star2
-samp_2=x_star3+1j*x_star4
-samp_3=x_star5+1j*x_star6
+# x_star = norm.rvs(loc=mean_x_star, scale=var_x_star, size=num_trials)
+# x_star2 = norm.rvs(loc=mean_x_star, scale=var_x_star, size=num_trials)
+# x_star3 = norm.rvs(loc=mean_x_star, scale=var_x_star, size=num_trials)
+# x_star4 = norm.rvs(loc=mean_x_star, scale=var_x_star, size=num_trials)
+# x_star5 = norm.rvs(loc=mean_x_star, scale=var_x_star, size=num_trials)
+# x_star6 = norm.rvs(loc=mean_x_star, scale=var_x_star, size=num_trials)
+# samp_1=x_star+1j*x_star2
+# samp_2=x_star3+1j*x_star4
+# samp_3=x_star5+1j*x_star6
 # #################CSI at receiver
 H1=h1+h2*1j
 H2=h3+h4*1j
@@ -91,104 +92,159 @@ for i in comb_at_recv:
         dec_data.append(1)
 
 
-
-
-# err_s_1=[]
-# err_s_0=[]
-# for i in range(len(comb_at_recv)):
-#     if(dec_data[i]==0 and stream_0_1[i]==1):
-#         err_s_1.append(np.real(comb_at_recv[i]))
-#     elif(dec_data[i]==1 and stream_0_1[i]==0):
-#         err_s_0.append(np.real(comb_at_recv[i]))
-# print(comb_at_recv[0])
-# x_values1 = np.linspace(min(np.real(comb_at_recv)), max(np.real(comb_at_recv)), num_trials)
-
-
-# # Estimate the kernel density function
-# kde1 = gaussian_kde(np.real(comb_at_recv))
-
-
-# # Evaluate the KDE at the x values
-# estimated_pdf = kde1.evaluate(x_values1)
-# normalized_pdf = estimated_pdf / estimated_pdf.sum()
-
-
-# x_values2 = np.linspace(min(err_s_0), max(err_s_0), num_trials)
-
-
-# # Estimate the kernel density function
-# kde2 = gaussian_kde(err_s_0)
-# # Evaluate the KDE at the x values
-# estimated_pdf2 = kde2.evaluate(x_values2)
-# #print(np.mean(x_values1))
-# normalized_pdf2 = estimated_pdf2 / estimated_pdf2.sum()
-
-
-
-
-#print(np.var(x_values2))
-
-
-# x_star = norm.rvs(loc=np.mean(x_values2), scale=np.var(x_values1), size=num_trials)
-# x_star_2 = norm.rvs(loc=np.mean(x_values1), scale=np.var(x_values1), size=num_trials)
-# print(kde2.pdf(x_star)[:100])
-
-
-# hist_values, bin_edges = np.histogram(comb_at_recv, bins=100000, density=True)
-
-
-# Calculate bin widths
-# bin_widths = bin_edges[1:] - bin_edges[:-1]
-
-
-# # Convert histogram to PDF by normalizing by bin width and total number of data points
-# pdf = hist_values / (hist_values.sum() * bin_widths)
-##############Importance Sampling
-ber_est = []
+##############MC
+c_mc = []
+x_mc=[]
 count = 0
 #count_mc = 0
 #count_bpsk = 0
 # for j in range(100):
 #     count = 0
-for i in range(0, len(stream_0_1)):
-    if dec_data[i] != stream_0_1[i] and (abs(H1[i])**2+ abs(H2[i])**2+ abs(H3[i])**2 <1/np.sqrt(snr)):#and (abs(x_star[i]) < 1/np.sqrt(snr) and abs(x_star2[i]) < 1/np.sqrt(snr) and abs(x_star2[i]) < 1/np.sqrt(snr)):
+for i in range(1, len(stream_0_1)):
+    if dec_data[i] != stream_0_1[i] :#and (abs(H1[i])**2+ abs(H2[i])**2+ abs(H3[i])**2 <1/np.sqrt(snr)):#and (abs(x_star[i]) < 1/np.sqrt(snr) and abs(x_star2[i]) < 1/np.sqrt(snr) and abs(x_star2[i]) < 1/np.sqrt(snr)):
         count = count + 1
+    c_mc.append(count / i)
+    x_mc.append(i)
+print(count / num_trials,"Van MC")
+
+
+###################SS-IS
+mean_x = 0
+var_x = 2
+noise1 = norm.rvs(loc=mean_x, scale=var_x, size=num_trials)
+noise2 = norm.rvs(loc=mean_x, scale=var_x, size=num_trials)
+noise3 = norm.rvs(loc=mean_x, scale=var_x, size=num_trials)
+h1 = norm.rvs(loc=mean_x, scale=var_x,
+              size=num_trials)  ####channel coefficients
+h2 = norm.rvs(loc=mean_x, scale=var_x,
+              size=num_trials)  ## channel coefficients
+h3 = norm.rvs(loc=mean_x, scale=var_x,
+              size=num_trials)  #### channel coefficients
+w1 = np.conj(h1) / np.sqrt(abs(h1)**2 + abs(h2)**2 + abs(h3)**2)
+w2 = np.conj(h2) / np.sqrt(abs(h1)**2 + abs(h2)**2 + abs(h3)**2)
+w3 = np.conj(h3) / np.sqrt(abs(h1)**2 + abs(h2)**2 + abs(h3)**2)
+# #################################
+P = sum(abs(ones_and_minus_ones)**2) / (num_trials)
+snr = 10**(snr_db / 10)
+th=1/np.sqrt(snr)
+N0 = P / snr
+recv_1 = (h1 * ones_and_minus_ones) + noise1 * np.sqrt(N0 / 2)
+recv_2 = (h2 * ones_and_minus_ones) + noise2 * np.sqrt(N0 / 2)
+recv_3 = (h3 * ones_and_minus_ones) + noise3 * np.sqrt(N0 / 2)
+##############MRC receiver
+dec_data = []
+comb_at_recv = np.conj(w1) * recv_1 + np.conj(w2) * recv_2 + np.conj(w3) * recv_3
+
+########################################
+#print(comb_at_recv[:100])
+for i in comb_at_recv:
+    if i >0:
+        dec_data.append(0)
+    elif i<0:
+        dec_data.append(1)
+
+####################SS_IS
+a1 = np.log(1 + np.absolute(h1))
+a2= np.log(1 + np.absolute(h2))
+a3= np.log(1 + np.absolute(h3))
+b=np.log(9.9)
+exp3=a3/b
+exp2=a2/b
+exp1=a1/b
+new_x1 = h1 * (th /0.9)**exp1  
+new_x2 = h2 * (th /0.7)**exp2 
+new_x3 = h3 * (th /0.9)**exp3 
+
+
+weight1=(norm.pdf(new_x1,loc=np.mean(h1),scale=np.var(h1)))/(norm.pdf(new_x1,loc=np.mean(new_x1),scale=np.var(new_x1)))  #weight of 1st dim
+weight2=(norm.pdf(new_x2,loc=np.mean(h2),scale=np.var(h2)))/(norm.pdf(new_x2,loc=np.mean(new_x2),scale=np.var(new_x2)))  #weight of 2nd dim
+weight3=(norm.pdf(new_x3,loc=np.mean(h3),scale=np.var(h3)))/(norm.pdf(new_x3,loc=np.mean(new_x3),scale=np.var(new_x3)))  #weight of 3rd dim
+
+##############SS Importance Sampling
+ber_est = []
+count = 0
+
+c_ss_is=[]
+x_ss_is=[]
+
+for i in range(1, len(stream_0_1)):
+    if abs(new_x1[i])**2+abs(new_x2[i])**2+abs(new_x3[i])**2<th:
+        count = count + weight1[i]*weight2[i]*weight3[i]
+    c_ss_is.append(count / i)
+    x_ss_is.append(i)
 ber_est.append(count / num_trials)
 
-
-print(ber_est)
-
+print(abs(ber_est[0]),"SS-IS")
 
 
+######################################IS
+mean_x = 0
+var_x = 0.9
+var_xn=1.9
+noise1 = norm.rvs(loc=mean_x, scale=var_xn, size=num_trials)
+noise2 = norm.rvs(loc=mean_x, scale=var_xn, size=num_trials)
+noise3 = norm.rvs(loc=mean_x, scale=var_xn, size=num_trials)
+h1 = norm.rvs(loc=mean_x, scale=var_x,
+              size=num_trials)  ####channel coefficients
+h2 = norm.rvs(loc=mean_x, scale=var_x,
+              size=num_trials)  ## channel coefficients
+h3 = norm.rvs(loc=mean_x, scale=var_x,
+              size=num_trials)  #### channel coefficients
+w1 = np.conj(h1) / np.sqrt(abs(h1)**2 + abs(h2)**2 + abs(h3)**2)
+w2 = np.conj(h2) / np.sqrt(abs(h1)**2 + abs(h2)**2 + abs(h3)**2)
+w3 = np.conj(h3) / np.sqrt(abs(h1)**2 + abs(h2)**2 + abs(h3)**2)
+# #################################
+P = sum(abs(ones_and_minus_ones)**2) / (num_trials)
+snr = 10**(snr_db / 10)
+th=1/np.sqrt(snr)
+N0 = P / snr
+recv_1 = (h1 * ones_and_minus_ones) + noise1 * np.sqrt(N0 / 2)
+recv_2 = (h2 * ones_and_minus_ones) + noise2 * np.sqrt(N0 / 2)
+recv_3 = (h3 * ones_and_minus_ones) + noise3 * np.sqrt(N0 / 2)
+##############MRC receiver
+dec_data = []
+comb_at_recv = np.conj(w1) * recv_1 + np.conj(w2) * recv_2 + np.conj(w3) * recv_3
+
+########################################
+#print(comb_at_recv[:100])
+for i in comb_at_recv:
+    if i >0:
+        dec_data.append(0)
+    elif i<0:
+        dec_data.append(1)
+m1=np.mean(new_x1)
+m2=np.mean(new_x2)
+m3=np.mean(new_x3)
+
+v1=np.var(new_x1)
+v2=np.var(new_x2)
+v3=np.var(new_x3)
+###############################################Sampling fn
+x_star = norm.rvs(loc=m1, scale=v1, size=num_trials)
+x_star2 = norm.rvs(loc=m2, scale=v2, size=num_trials)
+x_star3 = norm.rvs(loc=m3, scale=v3, size=num_trials)
+
+count_is=0
+for i in range(1, len(stream_0_1)):
+    if dec_data[i] != stream_0_1[i] and  abs(x_star[i])**2+abs(x_star2[i])**2+abs(x_star3[i])**2<=1/np.sqrt(snr):
+        count_is = count_is + ((norm.pdf(x_star[i], loc=np.mean(h1), scale=np.var(h1))/norm.pdf(x_star[i]))*
+                            (norm.pdf(x_star2[i], loc=np.mean(h2), scale=np.var(h2))/norm.pdf(x_star2[i])))
+                            #    (norm.pdf(x_star3[i], loc=np.mean(h3), scale=np.var(h3))/norm.pdf(x_star3[i])))
+    #c_mc.append(count_mc / (i))
+print(count_is/num_trials,"van IS")
 
 
+# true = []
+# st = []
+# for j in range(num_trials):
+#     true.append(db_16_ber)
+#     st.append(j)
 
-
-
-
-
-# plt.plot(ones_and_minus_ones,comb_at_recv,'o')
-# x = [ele.real for ele in comb_at_recv]
-# # extract imaginary part
-# y = [ele.imag for ele in comb_at_recv]
- 
-# # plot the complex numbers
-# plt.scatter(x, y)
-# #plt.hist(np.real(comb_at_recv),bins=100)
-# #plt.hist(np.imag(comb_at_recv),bins=100)
-# #plt.plot(x_values2, estimated_pdf2, color='blue', label='Estimated PDF (KDE) err 2')
-# #plt.plot(x_values1,estimated_pdf,color="yellow",label='samp')
-# # #plt.legend()
-# plt.grid(True)
-# plt.show()
-
-
-
-
-# plt.plot(x_star, kde2.pdf(x_star), color='blue', label='Estimated PDF (KDE) err 2')
+# plt.figure()
+# plt.grid()
+# #plt.plot(x_ss_is, c_ss_is, label="SS IS")
+# plt.plot(x_mc, c_mc, label="MC app")
+# plt.plot(st, true, label='True value',linestyle='dashed',color="gold",alpha=0.7)
+# plt.xlabel('Number of iterations')
 # plt.legend()
-# plt.grid(True)
 # plt.show()
-
-
-
