@@ -12,7 +12,7 @@ db_14_ber = 6.38754163 * 10**(-5)
 
 # Simulation parameters
 # this is a 1X3 MRC system
-num_trials = 30000000  # Number of trials (bits transmitted per trial)
+num_trials = 10000000  # Number of trials (bits transmitted per trial)
 #sims=1000 # Number of simulations
 # snr_range_db = np.arange(-10, 18, 2)  # SNR range in dB
 # print(snr_range_db)
@@ -219,6 +219,9 @@ m3=np.mean(new_x3)
 v1=np.var(new_x1)
 v2=np.var(new_x2)
 v3=np.var(new_x3)
+print(m1,v1)
+print(m2,v2)
+print(m3,v3)
 ###############################################Sampling fn
 x_star = norm.rvs(loc=m1, scale=v1, size=num_trials)
 x_star2 = norm.rvs(loc=m2, scale=v2, size=num_trials)
@@ -236,15 +239,3 @@ print(count_is/num_trials,"van IS")
 
 # true = []
 # st = []
-# for j in range(num_trials):
-#     true.append(db_16_ber)
-#     st.append(j)
-
-# plt.figure()
-# plt.grid()
-# #plt.plot(x_ss_is, c_ss_is, label="SS IS")
-# plt.plot(x_mc, c_mc, label="MC app")
-# plt.plot(st, true, label='True value',linestyle='dashed',color="gold",alpha=0.7)
-# plt.xlabel('Number of iterations')
-# plt.legend()
-# plt.show()
