@@ -4,6 +4,7 @@ import math
 from scipy.stats import norm, rayleigh, expon,gaussian_kde
 from scipy import special as sp
 from numpy import asarray
+from scipy import special as sp
 
 db_16_ber = 1.73115703 * 10**(-5)
 db_14_ber = 6.38754163 * 10**(-5)
@@ -22,7 +23,7 @@ stream_0_1 = np.random.randint(low=0, high=M, size=num_trials)
 ones_and_minus_ones = constellation[stream_0_1]
 ###################
 mean_x = 0
-var_x = 2
+var_x = 1
 # mean_x_star = 0
 # var_x_star = 1
 noise1 = norm.rvs(loc=mean_x, scale=var_x, size=num_trials)
@@ -92,13 +93,13 @@ for i in comb_at_recv:
 a1 = np.log(1 + np.absolute(h1))
 a2= np.log(1 + np.absolute(h2))
 a3= np.log(1 + np.absolute(h3))
-b=np.log(9.9)
+b=np.log(5)
 exp3=a3/b
 exp2=a2/b
 exp1=a1/b
-new_x1 = h1 * (th /0.9)**exp1  
-new_x2 = h2 * (th /0.7)**exp2 
-new_x3 = h3 * (th /0.9)**exp3 
+new_x1 = h1 * (th /5)**exp1  
+new_x2 = h2 * (th /5)**exp2 
+new_x3 = h3 * (th /5)**exp3 
 
 
 weight1=(norm.pdf(new_x1,loc=np.mean(h1),scale=np.var(h1)))/(norm.pdf(new_x1,loc=np.mean(new_x1),scale=np.var(new_x1)))  #weight of 1st dim
@@ -106,32 +107,34 @@ weight2=(norm.pdf(new_x2,loc=np.mean(h2),scale=np.var(h2)))/(norm.pdf(new_x2,loc
 weight3=(norm.pdf(new_x3,loc=np.mean(h3),scale=np.var(h3)))/(norm.pdf(new_x3,loc=np.mean(new_x3),scale=np.var(new_x3)))  #weight of 3rd dim
 
 
-m1=np.mean(new_x1)
-m2=np.mean(new_x2)
-m3=np.mean(new_x3)
+# m1=np.mean(new_x1)
+# m2=np.mean(new_x2)
+# m3=np.mean(new_x3)
 
-v1=np.var(new_x1)
-v2=np.var(new_x2)
-v3=np.var(new_x3)
+# v1=np.var(new_x1)
+# v2=np.var(new_x2)
+# v3=np.var(new_x3)
+def qfunc(x):
+    return 0.5-0.5*sp.erf(x/np.sqrt(2))
 ###############################################Sampling fn
-x_star = norm.rvs(loc=m1, scale=v1, size=num_trials)
-x_star2 = norm.rvs(loc=m2, scale=v2, size=num_trials)
-x_star3 = norm.rvs(loc=m3, scale=v3, size=num_trials)
-##############Importance Sampling
+# x_star = norm.rvs(loc=m1, scale=v1, size=num_trials)
+# x_star2 = norm.rvs(loc=m2, scale=v2, size=num_trials)
+# x_star3 = norm.rvs(loc=m3, scale=v3, size=num_trials)
+############## SS-IS
 ber_est = []
 count = 0
 count_mc=0
 c_ss_is=[]
 x_ss_is=[]
 c_mc=[]
-# for i in range(1, len(stream_0_1)):
-#     if abs(new_x1[i])**2+abs(new_x2[i])**2+abs(new_x3[i])**2<th:
-#         count = count + weight1[i]*weight2[i]*weight3[i]
-#     c_ss_is.append(count / i)
-#     x_ss_is.append(i)
-# ber_est.append(count / num_trials)
+for i in range(1, len(stream_0_1)):
+    if noise1[i]+noise2[i]+noise3[i]/(np.sqrt(abs(new_x1[i])**2+abs(new_x2[i])**2+abs(new_x3[i])**2))>=20:
+        count = count + weight1[i]*weight2[i]*weight3[i]
+    c_ss_is.append(count / i)
+    x_ss_is.append(i)
+ber_est.append(count / num_trials)
 
-# print(abs(ber_est[0]),"SS-IS")
+print(abs(ber_est[0]),"SS-IS")
 
 
 # for i in range(1, len(stream_0_1)):
@@ -140,13 +143,13 @@ c_mc=[]
 #     c_mc.append(count_mc / (12.5*i))
 # print(count_mc/(12.5*num_trials),"van MC")
 
-for i in range(1, len(stream_0_1)):
-    if dec_data[i]!=stream_0_1[i] and abs(x_star[i])**2+abs(x_star2[i])**2+abs(x_star3[i])**2<=th:
-        count_mc = count_mc + ((norm.pdf(x_star[i], loc=np.mean(h1), scale=np.var(h1))/norm.pdf(x_star[i], loc=m1, scale=v1))*
-                               (norm.pdf(x_star2[i], loc=np.mean(h2), scale=np.var(h2))/norm.pdf(x_star2[i], loc=m2, scale=v2))*
-                               (norm.pdf(x_star3[i], loc=np.mean(h3), scale=np.var(h3))/norm.pdf(x_star3[i], loc=m3, scale=v3)))
-    c_mc.append(count_mc / (i))
-print(count_mc/(num_trials),"van IS")
+# for i in range(1, len(stream_0_1)):
+#     if dec_data[i]!=stream_0_1[i] and abs(x_star[i])**2+abs(x_star2[i])**2+abs(x_star3[i])**2<=th:
+#         count_mc = count_mc + ((norm.pdf(x_star[i], loc=np.mean(h1), scale=np.var(h1))/norm.pdf(x_star[i], loc=m1, scale=v1))*
+#                                (norm.pdf(x_star2[i], loc=np.mean(h2), scale=np.var(h2))/norm.pdf(x_star2[i], loc=m2, scale=v2))*
+#                                (norm.pdf(x_star3[i], loc=np.mean(h3), scale=np.var(h3))/norm.pdf(x_star3[i], loc=m3, scale=v3)))
+#     c_mc.append(count_mc / (i))
+# print(count_mc/(num_trials),"van IS")
 
 # count_mc_2=0
 # for i in range(0, len(stream_0_1)):

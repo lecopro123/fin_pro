@@ -139,13 +139,13 @@ count = 0
 # # x_ss_is=[]
 
 for i in range(1, num_trials):
-    if abs(new_x1[i])**2+abs(new_x2[i])**2+abs(new_x3[i])**2<th: #and M_cos[i]>MHT:
+    if abs(new_x1[i])**2+abs(new_x2[i])**2+abs(new_x3[i])**2>=th: #and M_cos[i]>MHT:
         count = count + weight1[i]*weight2[i]*weight3[i]
     # c_ss_is.append(count / i)
     # x_ss_is.append(i)
 ber_est=count / num_trials
-
-print(ber_est,"SS-IS")
+print(ber_est,"hi")
+print(1-ber_est,"SS-IS")
      
      
 ###because may be it finally could transmit, but with 2/3 transmissions, so why consider the other channel conditions where it could not, its enough the consider the last one, either it will be able to send or either it would not.
