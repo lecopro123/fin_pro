@@ -13,7 +13,7 @@ db_14_ber = 6.38754163 * 10**(-5)
 # this is a 1X3 MRC system
 num_trials = 10000000  # Number of trials (bits transmitted per trial)
 
-snr_db = 16
+snr_db = 6
 L = 3  #####Number of R_x
 #########################
 M = 2  #########BPSK constellation constant
@@ -51,11 +51,11 @@ h3 = norm.rvs(loc=mean_x, scale=var_x,
 # w1 = H1 / np.sqrt(abs(H1)**2 + abs(H2)**2 + abs(H3)**2)
 # w2 = H2 / np.sqrt(abs(H1)**2 + abs(H2)**2 + abs(H3)**2)
 # w3 = H3 / np.sqrt(abs(H1)**2 + abs(H2)**2 + abs(H3)**2)
-w1 = np.conj(h1) / np.sqrt(abs(h1)**2 + abs(h2)**2 + abs(h3)**2)
-w2 = np.conj(h2) / np.sqrt(abs(h1)**2 + abs(h2)**2 + abs(h3)**2)
-w3 = np.conj(h3) / np.sqrt(abs(h1)**2 + abs(h2)**2 + abs(h3)**2)
+# w1 = np.conj(h1) / np.sqrt(abs(h1)**2 + abs(h2)**2 + abs(h3)**2)
+# w2 = np.conj(h2) / np.sqrt(abs(h1)**2 + abs(h2)**2 + abs(h3)**2)
+# w3 = np.conj(h3) / np.sqrt(abs(h1)**2 + abs(h2)**2 + abs(h3)**2)
 # #################################
-P = sum(abs(ones_and_minus_ones)**2) / (num_trials)
+P = 1
 snr = 10**(snr_db / 10)
 th=1/snr
 N0 = P / snr
@@ -63,12 +63,12 @@ N0 = P / snr
 # recv_2 = (H2 * ones_and_minus_ones) + (noise3+1j*noise4) * np.sqrt(N0 / 2)
 # recv_3 = (H3 * ones_and_minus_ones) + (noise5+1j*noise6) * np.sqrt(N0 / 2)
 recv_1 = (h1 * ones_and_minus_ones) + noise1 * np.sqrt(N0 / 2)
-recv_2 = (h2 * ones_and_minus_ones) + noise2 * np.sqrt(N0 / 2)
-recv_3 = (h3 * ones_and_minus_ones) + noise3 * np.sqrt(N0 / 2)
+# recv_2 = (h2 * ones_and_minus_ones) + noise2 * np.sqrt(N0 / 2)
+# recv_3 = (h3 * ones_and_minus_ones) + noise3 * np.sqrt(N0 / 2)
 ##############MRC receiver
 dec_data = []
 dec_data_zf = []
-comb_at_recv = np.conj(w1) * recv_1 + np.conj(w2) * recv_2 + np.conj(w3) * recv_3
+#comb_at_recv = np.conj(w1) * recv_1 + np.conj(w2) * recv_2 + np.conj(w3) * recv_3
 ############################################ZF receiver
 # nume=[]
 # den=[]
@@ -83,47 +83,47 @@ comb_at_recv = np.conj(w1) * recv_1 + np.conj(w2) * recv_2 + np.conj(w3) * recv_
 #         dec_data_zf.append(1)
 ########################################
 #print(comb_at_recv[:100])
-for i in comb_at_recv:
+for i in recv_1:
     if i >0:
         dec_data.append(0)
     elif i<0:
         dec_data.append(1)
 
 ####################SS_IS
-l=th/1.3
+l=th/1.01
 a1 = np.log(1 + np.absolute(h1))
-a2= np.log(1 + np.absolute(h2))
-a3= np.log(1 + np.absolute(h3))
+# a2= np.log(1 + np.absolute(h2))
+# a3= np.log(1 + np.absolute(h3))
 a4 = np.log(1 + np.absolute(noise1))
-a5= np.log(1 + np.absolute(noise2))
-a6= np.log(1 + np.absolute(noise3))
+# a5= np.log(1 + np.absolute(noise2))
+# a6= np.log(1 + np.absolute(noise3))
 #b=np.log(l)
 b1=np.sqrt(np.sum(np.absolute(a1**2)))
-b2=np.sqrt(np.sum(np.absolute(a2**2)))
-b3=np.sqrt(np.sum(np.absolute(a3**2)))
+# b2=np.sqrt(np.sum(np.absolute(a2**2)))
+# b3=np.sqrt(np.sum(np.absolute(a3**2)))
 b4=np.sqrt(np.sum(np.absolute(a4**2)))
-b5=np.sqrt(np.sum(np.absolute(a5**2)))
-b6=np.sqrt(np.sum(np.absolute(a6**2)))
-#print(b)
+# b5=np.sqrt(np.sum(np.absolute(a5**2)))
+# b6=np.sqrt(np.sum(np.absolute(a6**2)))
+# #print(b)
 exp1=a1/b1
-exp2=a2/b2
-exp3=a3/b3
+# exp2=a2/b
+# exp3=a3/b
 exp4=a4/b4
-exp5=a5/b5
-exp6=a6/b6
+# exp5=a5/b
+# exp6=a6/b
 new_x1 = h1 * (th /l)**exp1  
-new_x2 = h2 * (th /l)**exp2 
-new_x3 = h3 * (th /l)**exp3 
-new_x4 = noise1 * (th /l)**exp4 
-new_x5 = noise2 * (th /l)**exp5 
-new_x6 = noise3 * (th /l)**exp6 
+# new_x2 = h2 * (th /l)**exp2 
+# new_x3 = h3 * (th /l)**exp3 
+new_x4 = noise1 * (th /l)**exp4  
+# new_x5 = noise2 * (th /l)**exp2 
+# new_x6 = noise3 * (th /l)**exp3 
 
 weight1=(norm.pdf(new_x1,loc=np.mean(h1),scale=np.var(h1)))/(norm.pdf(new_x1,loc=np.mean(new_x1),scale=np.var(new_x1)))  #weight of 1st dim
-weight2=(norm.pdf(new_x2,loc=np.mean(h2),scale=np.var(h2)))/(norm.pdf(new_x2,loc=np.mean(new_x2),scale=np.var(new_x2)))  #weight of 2nd dim
-weight3=(norm.pdf(new_x3,loc=np.mean(h3),scale=np.var(h3)))/(norm.pdf(new_x3,loc=np.mean(new_x3),scale=np.var(new_x3)))  #weight of 3rd dim
+# weight2=(norm.pdf(new_x2,loc=np.mean(h2),scale=np.var(h2)))/(norm.pdf(new_x2,loc=np.mean(new_x2),scale=np.var(new_x2)))  #weight of 2nd dim
+# weight3=(norm.pdf(new_x3,loc=np.mean(h3),scale=np.var(h3)))/(norm.pdf(new_x3,loc=np.mean(new_x3),scale=np.var(new_x3)))  #weight of 3rd dim
 weight4=(norm.pdf(new_x4,loc=np.mean(noise1),scale=np.var(noise1)))/(norm.pdf(new_x4,loc=np.mean(new_x4),scale=np.var(new_x4)))  #weight of 1st dim
-weight5=(norm.pdf(new_x5,loc=np.mean(noise2),scale=np.var(noise2)))/(norm.pdf(new_x5,loc=np.mean(new_x5),scale=np.var(new_x5)))  #weight of 2nd dim
-weight6=(norm.pdf(new_x6,loc=np.mean(noise3),scale=np.var(noise3)))/(norm.pdf(new_x6,loc=np.mean(new_x6),scale=np.var(new_x6)))  #weight of 3rd dim
+# weight5=(norm.pdf(new_x5,loc=np.mean(noise2),scale=np.var(noise2)))/(norm.pdf(new_x5,loc=np.mean(new_x5),scale=np.var(new_x5)))  #weight of 2nd dim
+# weight6=(norm.pdf(new_x6,loc=np.mean(noise3),scale=np.var(noise3)))/(norm.pdf(new_x6,loc=np.mean(new_x6),scale=np.var(new_x6)))  #weight of 3rd dim
 
 
 # m1=np.mean(new_x1)
@@ -147,18 +147,32 @@ c_mc=[]
 for i in range(1, len(stream_0_1)):
     # if (-1*(new_x1[i]+new_x4[i])+th>=th and -1*(new_x2[i]+new_x5[i])+th>=th and -1*(new_x3[i]+new_x6[i])+th>=th) or (np.absolute(new_x1[i])-new_x4[i]+th>=th and np.absolute(new_x2[i])-new_x5[i]+th>=th and np.absolute(new_x3[i])-new_x6[i]+th>=th) or (np.absolute(new_x4[i])-new_x1[i]+th>=th and np.absolute(new_x5[i])-new_x2[i]+th>=th and np.absolute(new_x6[i])-new_x3[i]+th>=th) or (np.absolute(new_x1[i])-np.absolute(new_x4[i])+th>=th and np.absolute(new_x2[i])-np.absolute(new_x5[i])+th>=th and np.absolute(new_x3[i])-np.absolute(new_x6[i])+th>=th) or ((-1*new_x1[i]+new_x4[i])+th>=th and (-1*new_x2[i]+new_x5[i])+th>=th and (-1*new_x3[i]+new_x6[i])+th>=th) or (new_x4[i]-new_x1[i]+th>=th and new_x5[i]-new_x2[i]+th>=th and new_x6[i]-new_x3[i]+th>=th):
     #     count = count + weight1[i]*weight2[i]*weight3[i]*weight4[i]*weight5[i]*weight6[i]
-    if (new_x1[i]<0 and new_x2[i]<0 and new_x3[i]<0 and new_x4[i]<0 and new_x5[i]<0 and new_x6[i]<0):
-        if (-1*(new_x1[i]+new_x4[i])+th>=th and -1*(new_x2[i]+new_x5[i])+th>=th and -1*(new_x3[i]+new_x6[i])+th>=th) or (np.absolute(new_x1[i])-np.absolute(new_x4[i])+th>=th and np.absolute(new_x2[i])-np.absolute(new_x5[i])+th>=th and np.absolute(new_x3[i])-np.absolute(new_x6[i])+th>=th):
-            count = count + weight1[i]*weight2[i]*weight3[i]*weight4[i]*weight5[i]*weight6[i]
-    elif (new_x1[i]<0 and new_x2[i]<0 and new_x3[i]<0 and new_x4[i]>0 and new_x5[i]>0 and new_x6[i]>0):
-        if (np.absolute(new_x1[i])-new_x4[i]+th>=th and np.absolute(new_x2[i])-new_x5[i]+th>=th and np.absolute(new_x3[i])-new_x6[i]+th>=th) or (np.absolute(new_x1[i])-np.absolute(new_x4[i])+th>=th and np.absolute(new_x2[i])-np.absolute(new_x5[i])+th>=th and np.absolute(new_x3[i])-np.absolute(new_x6[i])+th>=th):
-            count = count + weight1[i]*weight2[i]*weight3[i]*weight4[i]*weight5[i]*weight6[i]
-    elif (new_x1[i]>0 and new_x2[i]>0 and new_x3[i]>0 and new_x4[i]<0 and new_x5[i]<0 and new_x6[i]<0):
-        if (np.absolute(new_x4[i])-new_x1[i]+th>=th and np.absolute(new_x5[i])-new_x2[i]+th>=th and np.absolute(new_x6[i])-new_x3[i]+th>=th):
-            count = count + weight1[i]*weight2[i]*weight3[i]*weight4[i]*weight5[i]*weight6[i]
-    elif (new_x1[i]>0 and new_x2[i]>0 and new_x3[i]>0 and new_x4[i]>0 and new_x5[i]>0 and new_x6[i]>0):
-        if (new_x4[i]-new_x1[i]+th>=th and new_x5[i]-new_x2[i]+th>=th and new_x6[i]-new_x3[i]+th>=th):
-            count = count + weight1[i]*weight2[i]*weight3[i]*weight4[i]*weight5[i]*weight6[i]
+    # if (new_x1[i]<0 and new_x2[i]<0 and new_x3[i]<0 and new_x4[i]<0 and new_x5[i]<0 and new_x6[i]<0):
+    #     if (-1*(new_x1[i]+new_x4[i])+th>=th and -1*(new_x2[i]+new_x5[i])+th>=th and -1*(new_x3[i]+new_x6[i])+th>=th) or (np.absolute(new_x1[i])-np.absolute(new_x4[i])+th>=th and np.absolute(new_x2[i])-np.absolute(new_x5[i])+th>=th and np.absolute(new_x3[i])-np.absolute(new_x6[i])+th>=th):
+    #         count = count + weight1[i]*weight2[i]*weight3[i]*weight4[i]*weight5[i]*weight6[i]
+    # elif (new_x1[i]<0 and new_x2[i]<0 and new_x3[i]<0 and new_x4[i]>0 and new_x5[i]>0 and new_x6[i]>0):
+    #     if (np.absolute(new_x1[i])-new_x4[i]+th>=th and np.absolute(new_x2[i])-new_x5[i]+th>=th and np.absolute(new_x3[i])-new_x6[i]+th>=th) or (np.absolute(new_x1[i])-np.absolute(new_x4[i])+th>=th and np.absolute(new_x2[i])-np.absolute(new_x5[i])+th>=th and np.absolute(new_x3[i])-np.absolute(new_x6[i])+th>=th):
+    #         count = count + weight1[i]*weight2[i]*weight3[i]*weight4[i]*weight5[i]*weight6[i]
+    # elif (new_x1[i]>0 and new_x2[i]>0 and new_x3[i]>0 and new_x4[i]<0 and new_x5[i]<0 and new_x6[i]<0):
+    #     if (np.absolute(new_x4[i])-new_x1[i]+th>=th and np.absolute(new_x5[i])-new_x2[i]+th>=th and np.absolute(new_x6[i])-new_x3[i]+th>=th):
+    #         count = count + weight1[i]*weight2[i]*weight3[i]*weight4[i]*weight5[i]*weight6[i]
+    # elif (new_x1[i]>0 and new_x2[i]>0 and new_x3[i]>0 and new_x4[i]>0 and new_x5[i]>0 and new_x6[i]>0):
+    #     if (new_x4[i]-new_x1[i]+th>=th and new_x5[i]-new_x2[i]+th>=th and new_x6[i]-new_x3[i]+th>=th):
+    #         count = count + weight1[i]*weight2[i]*weight3[i]*weight4[i]*weight5[i]*weight6[i]
+            
+            
+    if (new_x1[i]<0 and new_x4[i]<0):
+        if (-1*(new_x1[i]+new_x4[i])+th>=th ) or (np.absolute(new_x1[i])-np.absolute(new_x4[i])+th>=th):
+            count = count + weight1[i]*weight4[i]
+    elif (new_x1[i]<0 and new_x4[i]>0 ):
+        if (np.absolute(new_x1[i])-new_x4[i]+th>=th) or (-1*(new_x1[i])+(new_x4[i])+th>=th):
+            count = count + weight1[i]*weight4[i]
+    elif (new_x1[i]>0 and new_x4[i]<0):
+        if (np.absolute(new_x4[i])-new_x1[i]+th>=th):
+            count = count + weight1[i]*weight4[i]
+    elif (new_x1[i]>0 and new_x4[i]>0):
+        if (new_x4[i]-new_x1[i]+th>=th):
+            count = count + weight1[i]*weight4[i]
         
     c_ss_is.append(count / i)
     x_ss_is.append(i)
