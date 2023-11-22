@@ -13,7 +13,7 @@ db_14_ber = 6.38754163 * 10**(-5)
 # this is a 1X3 MRC system
 num_trials = 10000000  # Number of trials (bits transmitted per trial)
 
-snr_db = 16
+snr_db = 5
 L = 3  #####Number of R_x
 #########################
 M = 2  #########BPSK constellation constant
@@ -172,7 +172,7 @@ for i in range(1, len(stream_0_1)):
     
     
     if (w1[i]*new_x4[i])+(w2[i]*new_x5[i])+(w3[i]*new_x6[i])-np.sqrt((abs(new_x1[i])**2+abs(new_x2[i])**2+abs(new_x3[i])**2)*2*snr)+th>=th:
-        count = count + weight1[i]*weight2[i]*weight3[i]
+        count = count + weight1[i]*weight2[i]*weight3[i]*weight4[i]*weight5[i]*weight6[i]
         
     c_ss_is.append(count / i)
     x_ss_is.append(i)
