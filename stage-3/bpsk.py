@@ -11,7 +11,7 @@ db_14_ber = 6.38754163 * 10**(-5)
 
 # Simulation parameters
 # this is a 1X3 MRC system
-num_trials = 10000000  # Number of trials (bits transmitted per trial)
+num_trials = 100000000  # Number of trials (bits transmitted per trial)
 
 snr_db = 6
 L = 3  #####Number of R_x
@@ -90,7 +90,7 @@ for i in recv_1:
         dec_data.append(1)
 
 ####################SS_IS
-l=th/1.01
+l=th/1.11
 a1 = np.log(1 + np.absolute(h1))
 # a2= np.log(1 + np.absolute(h2))
 # a3= np.log(1 + np.absolute(h3))
@@ -162,10 +162,10 @@ for i in range(1, len(stream_0_1)):
             
             
     if (new_x1[i]<0 and new_x4[i]<0):
-        if (-1*(new_x1[i]+new_x4[i])+th>=th ) or (np.absolute(new_x1[i])-np.absolute(new_x4[i])+th>=th):
+        if  (np.absolute(new_x1[i])-np.absolute(new_x4[i])+th>=th):
             count = count + weight1[i]*weight4[i]
     elif (new_x1[i]<0 and new_x4[i]>0 ):
-        if (np.absolute(new_x1[i])-new_x4[i]+th>=th) or (-1*(new_x1[i])+(new_x4[i])+th>=th):
+        if (np.absolute(new_x1[i])-new_x4[i]+th>=th) :
             count = count + weight1[i]*weight4[i]
     elif (new_x1[i]>0 and new_x4[i]<0):
         if (np.absolute(new_x4[i])-new_x1[i]+th>=th):
