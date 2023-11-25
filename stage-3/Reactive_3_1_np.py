@@ -11,9 +11,9 @@ from numpy import asarray
 
 
 MHT=3  ###maximum HARQ repetitions
-num_trials=100000000
-MNU=4  ####maximum number of users+1
-snr_db = -12
+num_trials=10000000
+MNU=2  ####maximum number of users+1
+snr_db = 2
 L = 3  ###rx at BS
 snr = 10**(snr_db / 10)
 th=1/snr
@@ -177,17 +177,56 @@ weight6=(norm.pdf(new_x6,loc=np.mean(n3),scale=np.var(n3)))/(norm.pdf(new_x6,loc
 
 ##############SS Importance Sampling
 count = 0
-
-c_ss_is=[]
+i=0
+y_ss_is=[]
 x_ss_is=[]
 
-for i in range(1, len(H1)-2):
-    if (W1[i]*new_x4[i])+(W2[i]*new_x5[i])+(W3[i]*new_x6[i])-np.sqrt((abs(new_x1[i])**2+abs(new_x2[i])**2+abs(new_x3[i])**2)*2*snr)+th>=th and (W1[i+1]*new_x4[i+1])+(W2[i+1]*new_x5[i+1])+(W3[i+1]*new_x6[i+1])-np.sqrt((abs(new_x1[i+1])**2+abs(new_x2[i+1])**2+abs(new_x3[i+1])**2)*2*snr)+th>=th and (W1[i+2]*new_x4[i+2])+(W2[i+2]*new_x5[i+2])+(W3[i+2]*new_x6[i+2])-np.sqrt((abs(new_x1[i+2])**2+abs(new_x2[i+2])**2+abs(new_x3[i+2])**2)*2*snr)+th>=th:
-        count = count + weight1[i]*weight2[i]*weight3[i]*weight4[i]*weight5[i]*weight6[i]
-    c_ss_is.append(count / i)
+# for i in range(MHT, len(H1)-2,k):
+# while i<len(H1)-2:
+#     # if (W1[i]*new_x4[i])+(W2[i]*new_x5[i])+(W3[i]*new_x6[i])-np.sqrt((abs(new_x1[i])**2+abs(new_x2[i])**2+abs(new_x3[i])**2)*2*snr)+th>=th and (W1[i+1]*new_x4[i+1])+(W2[i+1]*new_x5[i+1])+(W3[i+1]*new_x6[i+1])-np.sqrt((abs(new_x1[i+1])**2+abs(new_x2[i+1])**2+abs(new_x3[i+1])**2)*2*snr)+th>=th and (W1[i+2]*new_x4[i+2])+(W2[i+2]*new_x5[i+2])+(W3[i+2]*new_x6[i+2])-np.sqrt((abs(new_x1[i+2])**2+abs(new_x2[i+2])**2+abs(new_x3[i+2])**2)*2*snr)+th>=th:
+#     #     count = count + weight1[i]*weight2[i]*weight3[i]*weight4[i]*weight5[i]*weight6[i]
+#     # c_ss_is.append(count / i)
+#     # x_ss_is.append(i)
+#     if (W1[i]*new_x4[i])+(W2[i]*new_x5[i])+(W3[i]*new_x6[i])-np.sqrt((abs(new_x1[i])**2+abs(new_x2[i])**2+abs(new_x3[i])**2)*2*snr)+th>=th:
+#         i=i+1
+#         if (W1[i]*new_x4[i])+(W2[i]*new_x5[i])+(W3[i]*new_x6[i])-np.sqrt((abs(new_x1[i])**2+abs(new_x2[i])**2+abs(new_x3[i])**2)*2*snr)+th>=th:
+#             i=i+1
+#             if (W1[i]*new_x4[i])+(W2[i]*new_x5[i])+(W3[i]*new_x6[i])-np.sqrt((abs(new_x1[i])**2+abs(new_x2[i])**2+abs(new_x3[i])**2)*2*snr)+th>=th:
+#                 count = count + weight1[i]*weight2[i]*weight3[i]*weight4[i]*weight5[i]*weight6[i]
+#     i=i+1
+#     x_ss_is.append(i)
+#     y_ss_is.append(count/i)
+# ber_est=count / num_trials
+# print(ber_est,"SS-IS")
+
+count=0
+i=0
+while i<len(H1)-2:
+    # if (W1[i]*new_x4[i])+(W2[i]*new_x5[i])+(W3[i]*new_x6[i])-np.sqrt((abs(new_x1[i])**2+abs(new_x2[i])**2+abs(new_x3[i])**2)*2*snr)+th>=th and (W1[i+1]*new_x4[i+1])+(W2[i+1]*new_x5[i+1])+(W3[i+1]*new_x6[i+1])-np.sqrt((abs(new_x1[i+1])**2+abs(new_x2[i+1])**2+abs(new_x3[i+1])**2)*2*snr)+th>=th and (W1[i+2]*new_x4[i+2])+(W2[i+2]*new_x5[i+2])+(W3[i+2]*new_x6[i+2])-np.sqrt((abs(new_x1[i+2])**2+abs(new_x2[i+2])**2+abs(new_x3[i+2])**2)*2*snr)+th>=th:
+    #     count = count + weight1[i]*weight2[i]*weight3[i]*weight4[i]*weight5[i]*weight6[i]
+    # c_ss_is.append(count / i)
+    # x_ss_is.append(i)
+    if (((W1[i]*new_x4[i])+(W2[i]*new_x5[i])+(W3[i]*new_x6[i]))**1.1)/(abs(new_x1[i])**2+abs(new_x2[i])**2+abs(new_x3[i])**2)**(0.3)>=(np.sqrt(2*snr)):
+        i=i+1
+        if (((W1[i]*new_x4[i])+(W2[i]*new_x5[i])+(W3[i]*new_x6[i]))**1.1)/(abs(new_x1[i])**2+abs(new_x2[i])**2+abs(new_x3[i])**2)**(0.3)>=(np.sqrt(2*snr)):
+            i=i+1
+            if (((W1[i]*new_x4[i])+(W2[i]*new_x5[i])+(W3[i]*new_x6[i]))**1.1)/(abs(new_x1[i])**2+abs(new_x2[i])**2+abs(new_x3[i])**2)**(0.3)>=(np.sqrt(2*snr)):
+                count = count + weight1[i]*weight2[i]*weight3[i]*weight4[i]*weight5[i]*weight6[i]
+    i=i+1
     x_ss_is.append(i)
-ber_est=count / len(H1)
-print(ber_est,"SS-IS")
-     
+    y_ss_is.append(count/i)
+ber_est=count / num_trials
+print(ber_est,"SS-IS 2")
+
+plt.figure()
+plt.grid()
+plt.plot(x_mc, c_mc, label="MC")
+# plt.plot(x_mc, c_is, label="IS")
+plt.plot(x_ss_is, y_ss_is, label="SS IS",color="black",linestyle='dashed')
+# plt.plot(st, true, label='True value',linestyle='dashed',color="gold",alpha=0.7)
+plt.xlabel('Number of iterations')
+plt.legend()
+plt.show()
+        
      
 ###because may be it finally could transmit, but with 2/3 transmissions, so why consider the other channel conditions where it could not, its enough the consider the last one, either it will be able to send or either it would not.

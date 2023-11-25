@@ -11,9 +11,9 @@ db_14_ber = 6.38754163 * 10**(-5)
 
 # Simulation parameters
 # this is a 1X3 MRC system
-num_trials = 10000000  # Number of trials (bits transmitted per trial)
+num_trials = 4000000  # Number of trials (bits transmitted per trial)
 
-snr_db = 5
+snr_db = 16
 L = 3  #####Number of R_x
 #########################
 M = 2  #########BPSK constellation constant
@@ -26,17 +26,17 @@ mean_x = 0
 var_x = 1
 # mean_x_star = 0
 # var_x_star = 1
-noise1 = norm.rvs(loc=mean_x, scale=var_x, size=num_trials)
-noise2 = norm.rvs(loc=mean_x, scale=var_x, size=num_trials)
-noise3 = norm.rvs(loc=mean_x, scale=var_x, size=num_trials)
+noise1=norm.rvs(loc=mean_x, scale=var_x, size=num_trials)
+noise2=norm.rvs(loc=mean_x, scale=var_x, size=num_trials)
+noise3=norm.rvs(loc=mean_x, scale=var_x, size=num_trials)
 # noise4 = norm.rvs(loc=mean_x, scale=var_x, size=num_trials)
 # noise5 = norm.rvs(loc=mean_x, scale=var_x, size=num_trials)
 # noise6 = norm.rvs(loc=mean_x, scale=var_x, size=num_trials)
-h1 = norm.rvs(loc=mean_x, scale=var_x,
+h1=rayleigh.rvs(loc=mean_x, scale=var_x,
               size=num_trials)  ####channel coefficients
-h2 = norm.rvs(loc=mean_x, scale=var_x,
-              size=num_trials)  ## channel coefficients
-h3 = norm.rvs(loc=mean_x, scale=var_x,
+h2=rayleigh.rvs(loc=mean_x, scale=var_x,
+               size=num_trials)  ## channel coefficients
+h3=rayleigh.rvs(loc=mean_x, scale=var_x,
               size=num_trials)  #### channel coefficients
 # h4 = norm.rvs(loc=mean_x, scale=var_x,
 #               size=num_trials)  ####channel coefficients
@@ -62,9 +62,9 @@ N0 = P / snr
 # recv_1 = (H1 * ones_and_minus_ones) + (noise1+1j*noise2) * np.sqrt(N0 / 2)
 # recv_2 = (H2 * ones_and_minus_ones) + (noise3+1j*noise4) * np.sqrt(N0 / 2)
 # recv_3 = (H3 * ones_and_minus_ones) + (noise5+1j*noise6) * np.sqrt(N0 / 2)
-recv_1 = (h1 * ones_and_minus_ones) + noise1 * np.sqrt(N0 / 2)
-recv_2 = (h2 * ones_and_minus_ones) + noise2 * np.sqrt(N0 / 2)
-recv_3 = (h3 * ones_and_minus_ones) + noise3 * np.sqrt(N0 / 2)
+recv_1 = (h1*ones_and_minus_ones) + (noise1*np.sqrt(N0/1))
+recv_2 = (h2*ones_and_minus_ones) + (noise2*np.sqrt(N0/3))
+recv_3 = (h3*ones_and_minus_ones) + (noise3*np.sqrt(N0/2))
 ##############MRC receiver
 dec_data = []
 dec_data_zf = []
@@ -84,7 +84,7 @@ comb_at_recv = np.conj(w1) * recv_1 + np.conj(w2) * recv_2 + np.conj(w3) * recv_
 ########################################
 #print(comb_at_recv[:100])
 for i in comb_at_recv:
-    if i >0:
+    if i >=0:
         dec_data.append(0)
     else:
         dec_data.append(1)
@@ -144,7 +144,7 @@ count_mc=0
 c_ss_is=[]
 x_ss_is=[]
 c_mc=[]
-for i in range(1, len(stream_0_1)):
+for i in range(1, num_trials):
     # if (-1*(new_x1[i]+new_x4[i])+th>=th and -1*(new_x2[i]+new_x5[i])+th>=th and -1*(new_x3[i]+new_x6[i])+th>=th) or (np.absolute(new_x1[i])-new_x4[i]+th>=th and np.absolute(new_x2[i])-new_x5[i]+th>=th and np.absolute(new_x3[i])-new_x6[i]+th>=th) or (np.absolute(new_x4[i])-new_x1[i]+th>=th and np.absolute(new_x5[i])-new_x2[i]+th>=th and np.absolute(new_x6[i])-new_x3[i]+th>=th) or (np.absolute(new_x1[i])-np.absolute(new_x4[i])+th>=th and np.absolute(new_x2[i])-np.absolute(new_x5[i])+th>=th and np.absolute(new_x3[i])-np.absolute(new_x6[i])+th>=th) or ((-1*new_x1[i]+new_x4[i])+th>=th and (-1*new_x2[i]+new_x5[i])+th>=th and (-1*new_x3[i]+new_x6[i])+th>=th) or (new_x4[i]-new_x1[i]+th>=th and new_x5[i]-new_x2[i]+th>=th and new_x6[i]-new_x3[i]+th>=th):
     #     count = count + weight1[i]*weight2[i]*weight3[i]*weight4[i]*weight5[i]*weight6[i]
     # if (new_x1[i]<0 and new_x2[i]<0 and new_x3[i]<0 and new_x4[i]<0 and new_x5[i]<0 and new_x6[i]<0): #h -ve n-ve
@@ -171,12 +171,13 @@ for i in range(1, len(stream_0_1)):
     #         count = count + weight1[i]*weight2[i]*weight3[i]*weight4[i]*weight5[i]*weight6[i]
     
     
-    if (w1[i]*new_x4[i])+(w2[i]*new_x5[i])+(w3[i]*new_x6[i])-np.sqrt((abs(new_x1[i])**2+abs(new_x2[i])**2+abs(new_x3[i])**2)*2*snr)+th>=th:
+    if (((w1[i]*new_x4[i])+(w2[i]*new_x5[i])+(w3[i]*new_x6[i]))**1.1)/(abs(new_x1[i])**2+abs(new_x2[i])**2+abs(new_x3[i])**2)**(0.3)>=(np.sqrt(2*snr)):
+    #if (((w1[i]*new_x4[i])+(w2[i]*new_x5[i])+(w3[i]*new_x6[i])))/(abs(new_x1[i])**2+abs(new_x2[i])**2+abs(new_x3[i])**2)**(0.5)>=(np.sqrt(2*snr)):
         count = count + weight1[i]*weight2[i]*weight3[i]*weight4[i]*weight5[i]*weight6[i]
         
     c_ss_is.append(count / i)
     x_ss_is.append(i)
-ber_est.append(count /len(stream_0_1))
+ber_est.append(count /12*len(stream_0_1))
 
 print(abs(ber_est[0]),"SS-IS")
 
